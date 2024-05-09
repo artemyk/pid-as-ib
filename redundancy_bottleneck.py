@@ -70,7 +70,7 @@ def conditionalize(joint):
 def get_rb_value(
           beta,                    # Parameter that controls trade-off between prediction and compression            
           pY,                      # 1D np.array, distribution over outcomes of target Y
-          src_cond_dists,          # list of 2D np.array, conditional distribution X_i|Y for each source
+          src_cond_dists,          # tuple of 2D np.arrays, conditional distribution X_i|Y for each source
           pS=None,                 # 1D np.array specifying distribution p(s) over sources. If none, using uniform
           nQ=None,                 # Cardinality of bottleneck random variable.
                                    #   If None, we will use nQ = nZS + 1 (as described in the article)
@@ -122,7 +122,7 @@ def get_rb_value(
     # Create some handy indexing dictionaries/functions
     zs_ids = []
     for src, p in enumerate(src_cond_dists):
-        for z in np.flatnonzero( p@pY):  # Add non-zero probability outcomes to list of ids
+        for z in np.flatnonzero( p.astype(np.float64)@pY.astype(np.float64)):  # Add non-zero probability outcomes to list of ids
             zs_ids.append( (z,src) )
     nZS    = len(zs_ids)
     nZ     = max([p.shape[0] for p in src_cond_dists])
@@ -327,12 +327,12 @@ def get_rb_value(
 
 
 
-# try:
-#     from numba import jit_module
-#     jit_module(nopython=True, error_model="numpy")
+try:
+    from numba import jit_module
+    jit_module(nopython=True, error_model="numpy")
 
-# except ModuleNotFoundError:
-#     warnings.warn("Please install numba package for faster performance!")
+except ModuleNotFoundError:
+    warnings.warn("Please install numba package for faster performance!")
 
 
 

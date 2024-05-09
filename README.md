@@ -1,6 +1,6 @@
 # Partial information decomposition as information bottleneck
 
-Python code to implement Redundancy Bottleneck (RB) algorithm, described in:
+Python 3 code to implement Redundancy Bottleneck (RB) algorithm, described in:
   * A Kolchinsky, "Partial information decomposition as information bottleneck", 2024.
 
 

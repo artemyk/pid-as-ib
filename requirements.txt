@@ -1,0 +1,6 @@
+numpy
+scipy
+matplotlib # for plotting only
+seaborn    # for plotting only
+numba      # To increase speed
+# pypoman  # Only needed to calculate previous measure (Blackwell redundancy)

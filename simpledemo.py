@@ -8,7 +8,7 @@ src_conditionals = (np.array([[0.95, 0.25],
                     np.array([[0.8 , 0.4],
                               [0.2 , 0.6]]))
 
-beta = 100
+beta = 1/10
 r = rb.get_rb_value(beta=beta, pY=pY, src_cond_dists=src_conditionals, num_retries=10)
 print("Redundancy bottleneck at beta=%g: prediction=%9.6f, compression=%9.6f" % (beta, r.prediction, r.compression))
 

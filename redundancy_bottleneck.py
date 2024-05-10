@@ -79,12 +79,13 @@ def get_rb_value(
           max_iters      = 1000,   # Maximum iterations for convergence
           tol            = 1e-6,   # Stopping criterion for convergence
           verbose        = False,  # Print debugging information
-          squared_langragian=False,
-          pp=2,
+          squared_lagrangian=False  # Whether to optimize squared RB Lagrangian instead  # !!!! change name
           ):
     """
-    Solve the redundancy bottleneck (RB) Lagrangian problem,
-        max I(Q;Y) - beta * I(Q;S|Y)
+    Solve the redundancy bottleneck RB Lagrangian problem,
+        max I(Q;Y) - (1/beta) I(Q;S|Y)
+    or the squared RB Lagrangian problem,
+        max I(Q;Y) - (1/beta) exp(I(Q;S|Y))
 
     We use the alternating projections algorithm described in the paper. 
 
@@ -98,7 +99,6 @@ def get_rb_value(
 
 
     assert(tol  > 0)
-    assert(beta > 0)
 
 
     check_p(pY)
@@ -175,13 +175,11 @@ def get_rb_value(
         miQ_YgS = H_Y - cond_entropy(pY_QS)
         miQ_SgY = cond_entropy(pQ_Y) - cond_entropy(pQ_SY)
 
-        if squared_langragian:
-            if pp==-1:
-                obj = miQ_YgS-beta*np.exp(miQ_SgY)
-            else:
-                obj = miQ_YgS-beta*(miQ_SgY+1)**pp
+        if squared_lagrangian:
+            #obj = miQ_YgS-beta*(miQ_SgY+1)**2/2
+            obj = miQ_YgS-np.exp(miQ_SgY)/beta
         else:
-            obj = miQ_YgS-beta*miQ_SgY
+            obj = miQ_YgS-miQ_SgY/beta
 
         return obj, miQ_YgS, miQ_SgY, pQ_Y, pQ_S, pY_QS, pQ_SY, pZ_SYQ
 
@@ -238,13 +236,11 @@ def get_rb_value(
                         b += p*np.log(pY[y]*pZgSY[z,sy])
                         b -= p*np.log(v2) if v2 > 0 else -np.inf
                         
-                    if squared_langragian:
-                        if pp == -1:
-                            ln_rQgZS[q,zs] = a/(np.exp(miQ_SgY)*beta) - b
-                        else:
-                            ln_rQgZS[q,zs] = a/(pp*(miQ_SgY+1)**(pp-1)*beta) - b
+                    if squared_lagrangian:
+                        #ln_rQgZS[q,zs] = a/((miQ_SgY+1)*beta) - b
+                        ln_rQgZS[q,zs] = beta*a/np.exp(miQ_SgY) - b
                     else:
-                        ln_rQgZS[q,zs] = a/beta - b
+                        ln_rQgZS[q,zs] = beta*a - b
 
                 # Rescale to avoid numerical overflows in np.exp. This doesn't affect the 
                 # results since its cancelled by conditionalize

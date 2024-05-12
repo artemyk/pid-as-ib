@@ -59,7 +59,7 @@ class TestRB(unittest.TestCase):
 
 
 class TestRB_SQLagrangian(TestRB):
-    extra_args = {'squared_lagrangian':True}
+    extra_args = {'exponential_lagrangian':True}
 
 
 if __name__ == '__main__': 

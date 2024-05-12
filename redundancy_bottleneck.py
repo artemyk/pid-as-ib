@@ -79,12 +79,13 @@ def get_rb_value(
           max_iters      = 1000,   # Maximum iterations for convergence
           tol            = 1e-6,   # Stopping criterion for convergence
           verbose        = False,  # Print debugging information
-          squared_lagrangian=False  # Whether to optimize squared RB Lagrangian instead  # !!!! change name
+          exponential_lagrangian=False  # Whether to optimize exponential RB Lagrangian, which combines
+                                        # prediction and compression terms in a nonlinear way
           ):
     """
     Solve the redundancy bottleneck RB Lagrangian problem,
         max I(Q;Y) - (1/beta) I(Q;S|Y)
-    or the squared RB Lagrangian problem,
+    or the exponential RB Lagrangian problem,
         max I(Q;Y) - (1/beta) exp(I(Q;S|Y))
 
     We use the alternating projections algorithm described in the paper. 
@@ -175,8 +176,7 @@ def get_rb_value(
         miQ_YgS = H_Y - cond_entropy(pY_QS)
         miQ_SgY = cond_entropy(pQ_Y) - cond_entropy(pQ_SY)
 
-        if squared_lagrangian:
-            #obj = miQ_YgS-beta*(miQ_SgY+1)**2/2
+        if exponential_lagrangian:
             obj = miQ_YgS-np.exp(miQ_SgY)/beta
         else:
             obj = miQ_YgS-miQ_SgY/beta
@@ -236,8 +236,7 @@ def get_rb_value(
                         b += p*np.log(pY[y]*pZgSY[z,sy])
                         b -= p*np.log(v2) if v2 > 0 else -np.inf
                         
-                    if squared_lagrangian:
-                        #ln_rQgZS[q,zs] = a/((miQ_SgY+1)*beta) - b
+                    if exponential_lagrangian:
                         ln_rQgZS[q,zs] = beta*a/np.exp(miQ_SgY) - b
                     else:
                         ln_rQgZS[q,zs] = beta*a - b

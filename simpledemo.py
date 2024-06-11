@@ -19,4 +19,4 @@ try:
     r2 = blackwell_redundancy.get_blackwell_redundancy(pY, src_conditionals)
     print("Blackwell redundancy             : redundancy=%9.6f" % r2[0])
 except ModuleNotFoundError:
-    print("If you wish to compute Blackwell redundancy, please install pypoman package")
+    print("If you wish to compute Blackwell redundancy using old algorithm, please install pypoman package")
